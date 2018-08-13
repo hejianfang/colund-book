@@ -1,33 +1,40 @@
 <template>
-<div class="container">
-  <div class="item-wrap">
-    <img :src="bookMsg.img">
-    <div class="content-right">
-      <div class="content-title">{{bookMsg.title}}</div>
-      <div>作者：{{bookMsg.author}}</div>
-      <div>{{bookMsg.looknums}}人在看</div>
-      <div>{{bookMsg.startsnums}}人喜欢</div>
+<div>
+  <div v-if="!show" id="loading">
+    <img src="/static/img/loading1.gif">
+  </div>
+  <div class="container" v-else="show">
+    <div class="item-wrap">
+      <img :src="bookMsg.img">
+      <div class="content-right">
+        <div class="content-title">{{bookMsg.title}}</div>
+        <div>作者：{{bookMsg.author}}</div>
+        <div>{{bookMsg.looknums}}人在看</div>
+        <div>{{bookMsg.startsnums}}人喜欢</div>
+      </div>
     </div>
+    <div class="btn">
+      <button type="default" size="mini">加入收藏</button>
+      <button type="default" size="mini" open-type="share">分享好友</button>
+      <button type="default" size="mini">分享朋友圈</button>
+    </div>
+    <div class="introduction">
+      <div class="introductions">简介</div>
+      <div class="desc">
+        {{bookMsg.desc}}
+      </div>
+      <div class="list" @click="handleClick(bookMsg._id)">
+        <div class="lists" >
+          <div class="sss">
+            <span>查看目录</span>
+            <span>共{{langhth}}章</span>
+          </div>
+          <div class="gengxin">更新于2天前</div>
+        </div>
+      </div>
+    </div>
+    <button id="btn" @click="handleClick(bookMsg._id)">阅读该书籍</button>
   </div>
-  <div class="btn">
-    <button type="default" size="mini">加入收藏</button>
-    <button type="default" size="mini" open-type="share">分享好友</button>
-    <button type="default" size="mini">分享朋友圈</button>
-  </div>
- <div class="introduction">
-   <div class="introductions">简介</div>
-   <div class="desc">
-     {{bookMsg.desc}}
-   </div>
-   <div class="list" @click="handleClick(bookMsg._id)">
-     <div class="lists" >
-       <span>查看目录</span>
-       <span>共{{langhth}}章</span>
-       <span>更新于2天前</span>
-     </div>
-   </div>
- </div>
-  <button id="btn" @click="handleClick(bookMsg._id)">阅读该书籍</button>
 </div>
 </template>
 
@@ -38,7 +45,8 @@
       return{
       bookId:'',
       bookMsg:{},
-      langhth:0
+      langhth:0,
+        show:false
       }
     },
     methods:{
@@ -46,9 +54,11 @@
         axios.get(`/book/${this.bookId}`).then(res=>{
           this.bookMsg = res.data
           this.langhth = res.length
+          this.show = true
         })
       },
       handleClick(val){
+        this.$store.commit('increment',val)
         wx.navigateTo({
           url: `/pages/catalogue/main?id=${val}`
         })
@@ -69,6 +79,17 @@
 </script>
 
 <style scoped lang="less">
+  #loading{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: white;
+    img{
+      transform: translate(10%,50%);
+    }
+  }
 .item-wrap{
   display: flex;
   img{
@@ -118,29 +139,23 @@
     }
   }
   .list{
-    display: flex;
     margin: 20rpx 0;
     .lists{
       display: flex;
       height: 20px;
       line-height: 35px;
       justify-content: space-between;
+      .gengxin{
+        font-size: 28rpx;
+      }
     }
-    .lists span:first-child{
+    .lists .sss span:first-child{
       font-size: 34rpx;
       font-weight: 700;
       margin-right: 10px;
     }
-    .lists span:nth-child(2){
+    .lists .sss span:nth-child(2){
       font-size: 28rpx;
-      display: inline-block;
-
-    }
-    .lists span:last-child{
-      font-size: 28rpx;
-      margin-left:320rpx;
-      display:inline-block;
-      vertical-align: middle;
     }
   }
   #btn{

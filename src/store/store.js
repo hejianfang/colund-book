@@ -7,16 +7,15 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
   state: {
-    count: 0
+    bookId: ''
   },
   mutations: {
-    increment: (state) => {
-      const obj = state
-      obj.count += 1
+    increment: (state,val) => {
+      state.bookId = val
+      console.log(state.bookId);
     },
-    decrement: (state) => {
-      const obj = state
-      obj.count -= 1
+    decrement: (state,val) => {
+
     }
   }
 })

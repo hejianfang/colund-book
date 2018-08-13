@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import App from './App'
+import store from './store/store'
+Vue.prototype.$store=store;
 
 Vue.config.productionTip = false
 App.mpType = 'app'
@@ -16,7 +18,33 @@ export default {
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#fff',
       navigationBarTitleText: '云书',
-      navigationBarTextStyle: 'black'
+      navigationBarTextStyle: 'black',
+      enablePullDownRefresh:true
+    },
+    tabBar: {
+      color:'#333',
+      selectedColor:'#1296db',
+      backgroundColor: "#ffffff",
+      borderStyle: "white",
+      list: [{
+        pagePath: "pages/index/main",
+        iconPath: '/static/img/shouye (1).png',
+        selectedIconPath: '/static/img/shouye.png',
+        text: "首页",
+      },
+        {
+          pagePath: "pages/studly/main",
+          iconPath: '/static/img/shu(1).png',
+          selectedIconPath: '/static/img/shu.png',
+          text: "我的学习",
+        },
+        {
+          pagePath: "pages/myCenter/main",
+          iconPath: '/static/img/my(1).png',
+          selectedIconPath: '/static/img/my.png',
+          text: "个人中心",
+        }
+      ]
     }
-  }
+}
 }

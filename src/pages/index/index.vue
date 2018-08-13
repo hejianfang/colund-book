@@ -1,36 +1,41 @@
 <template>
-  <div class="container">
-    <div class="item-swiper">
-      <swiper :indicator-dots="true"
-              :circular="true"
-              :autoplay="autoplay"
-              :interval="interval"
-              :duration="duration"
-              indicator-active-color="#fff">
-        <block v-for="(item,index) in swiperArr" :key="index">
-          <swiper-item class="swiper-wrap">
-            <a :href="'/pages/details/main?id='+ item.book._id">
-              <img :src="item.img">
-            </a>
-            <div class="item-title">{{item.title}}</div>
-          </swiper-item>
-        </block>
-      </swiper>
-    </div>
-    <div class="item-content" v-for="(item,value) in lists" :key="value">
-      <div class="content-top"><span>|</span><span>{{item.title}}</span></div>
-        <div class="items-wrap" v-for="(ite,index) in item.books" :key="index" @click="handleClickid(ite._id)">
-          <img :src="ite.img">
-          <div class="items-details">
-            <div class="items-detail">
-              <p>{{ite.title}}</p>
-              <p>{{ite.desc}}</p>
-            </div>
-            <p><span>{{ite.author}}</span> <span>两天前 <span>{{item.title}}{{ite.looknums}}人在看</span></span> </p>
-          </div>
-        </div>
-    </div>
-  </div>
+ <div>
+   <div v-if="!show" id="loading">
+     <img src="/static/img/loading1.gif">
+   </div>
+   <div class="container" v-else="show">
+     <div class="item-swiper">
+       <swiper :indicator-dots="true"
+               :circular="true"
+               :autoplay="autoplay"
+               :interval="interval"
+               :duration="duration"
+               indicator-active-color="#fff">
+         <block v-for="(item,index) in swiperArr" :key="index">
+           <swiper-item class="swiper-wrap">
+             <a :href="'/pages/details/main?id='+ item.book._id">
+               <img :src="item.img">
+             </a>
+             <div class="item-title">{{item.title}}</div>
+           </swiper-item>
+         </block>
+       </swiper>
+     </div>
+     <div class="item-content" v-for="(item,value) in lists" :key="value">
+       <div class="content-top"><span>|</span><span>{{item.title}}</span></div>
+       <div class="items-wrap" v-for="(ite,index) in item.books" :key="index" @click="handleClickid(ite._id)">
+         <img :src="ite.img">
+         <div class="items-details">
+           <div class="items-detail">
+             <p>{{ite.title}}</p>
+             <p>{{ite.desc}}</p>
+           </div>
+           <p><span>{{ite.author}}</span> <span>两天前 <span>{{item.title}}{{ite.looknums}}人在看</span></span> </p>
+         </div>
+       </div>
+     </div>
+   </div>
+ </div>
 </template>
 
 <script>
@@ -43,17 +48,20 @@
         duration: 500,
         swiperArr: [],
         lists:[],
+        show:false
       }
     },
     methods: {
       getSwiper () {
         axios.get('/swiper').then(res => {
           this.swiperArr = res.data
+          this.show = true
         })
       },
       getLists(){
         axios.get('/category/books').then(res=>{
           this.lists = res.data
+          this.show = true
         })
       },
       handleClickid(val){
@@ -63,13 +71,46 @@
       }
     },
     created () {
-      this.getSwiper()
-      this.getLists()
+       this.getSwiper()
+       this.getLists()
+    },
+  onPullDownRefresh(){
+      wx.setBackgroundTextStyle({
+        textStyle: 'dark', // 下拉背景字体、loading 图的样式为dark
+      })
+      let that = this
+    if(that.lists){
+      that.getSwiper()
+      that.getLists()
+      wx.showToast({
+        title: '成功',
+        icon: 'success',
+        duration: 1000
+      })
+      wx.stopPullDownRefresh()
+    }else{
+      wx.showToast({
+        title: '失败',
+        icon:'cancel',
+        duration: 2000
+      })
+    }
     }
   }
 </script>
 
 <style scoped lang="less">
+  #loading{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: white;
+    img{
+     transform: translate(10%,50%);
+    }
+  }
   .item-swiper{
     height: 400rpx;
     swiper{
