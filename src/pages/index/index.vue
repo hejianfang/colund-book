@@ -1,9 +1,7 @@
 <template>
  <div>
-   <div v-if="!show" id="loading">
-     <img src="/static/img/loading1.gif">
-   </div>
-   <div class="container" v-else="show">
+     <img src="/static/img/Disk-1s-200px.svg" v-show="!show" id="loading">
+   <div class="container" v-if="show">
      <div class="item-swiper">
        <swiper :indicator-dots="true"
                :circular="true"
@@ -48,10 +46,13 @@
         duration: 500,
         swiperArr: [],
         lists:[],
-        show:false
+        show :false
       }
     },
     methods: {
+      computed:{
+
+      },
       getSwiper () {
         axios.get('/swiper').then(res => {
           this.swiperArr = res.data
@@ -82,11 +83,6 @@
     if(that.lists){
       that.getSwiper()
       that.getLists()
-      wx.showToast({
-        title: '成功',
-        icon: 'success',
-        duration: 1000
-      })
       wx.stopPullDownRefresh()
     }else{
       wx.showToast({
@@ -95,22 +91,14 @@
         duration: 2000
       })
     }
+    },
+    onReachBottom(){
+      console.log(1123);
     }
   }
 </script>
 
 <style scoped lang="less">
-  #loading{
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: white;
-    img{
-     transform: translate(10%,50%);
-    }
-  }
   .item-swiper{
     height: 400rpx;
     swiper{

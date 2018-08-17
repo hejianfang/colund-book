@@ -8,7 +8,7 @@ export default {
   config: {
     backgroundTextStyle: 'light',
     navigationBarBackgroundColor: '#fff',
-    navigationBarTitleText: '目录',
+    navigationBarTitleText: '登录',
     navigationBarTextStyle: 'black'
   }
 }

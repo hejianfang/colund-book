@@ -9,6 +9,7 @@ export default {
     backgroundTextStyle: 'light',
     navigationBarBackgroundColor: '#fff',
     navigationBarTitleText: '我的学习',
-    navigationBarTextStyle: 'black'
+    navigationBarTextStyle: 'black',
+    onReachBottomDistance:0
   }
 }

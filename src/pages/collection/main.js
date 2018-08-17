@@ -8,7 +8,8 @@ export default {
   config: {
     backgroundTextStyle: 'light',
     navigationBarBackgroundColor: '#fff',
-    navigationBarTitleText: '目录',
-    navigationBarTextStyle: 'black'
+    navigationBarTitleText: '收藏',
+    navigationBarTextStyle: 'black',
+    onReachBottomDistance:0
   }
 }

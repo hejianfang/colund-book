@@ -1,9 +1,7 @@
 <template>
   <div>
-    <div v-if="!show" id="loading">
-      <img src="/static/img/loading1.gif">
-    </div>
-    <div class="container" v-else="show">
+      <img src="/static/img/Disk-1s-200px.svg" v-show="!show" id="loading">
+    <div class="container" v-if="show">
       <div v-for="(item,index) in catalogues"
            :key="index"
            @click="handleclick(item._id)"
@@ -26,40 +24,37 @@
    },
     methods:{
       getData(){
+        this.catalogues = []
         axios.get(`/titles/${this.bookId}`).then(res=>{
           this.catalogues = res.data
           this.show = true
         })
       },
       handleclick(val){
+        console.log(val);
         wx.navigateTo({
           url: `/pages/article/main?id=${val}`
         })
       }
   },
     onLoad(options){
+      this.show = false
       this.bookId = options.id;
       this.getData();
-    }
+    },
   }
 </script>
 
 <style scoped lang="less">
-  #loading{
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: white;
-  img{
-    transform: translate(10%,50%);
-  }
-  }
 .catalogues{
-  margin-top: 20rpx;
+  font-size:30rpx;
+  color:#333;
+  padding-left: 40rpx;
+  line-height: 60rpx;
+  height: 60rpx;
+  border-bottom: 1px solid #f1f1f1;
 }
   .catalogues:active{
-    background-color: #ccc;
+    background-color: #aaa;
   }
 </style>

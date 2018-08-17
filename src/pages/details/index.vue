@@ -1,9 +1,7 @@
 <template>
 <div>
-  <div v-if="!show" id="loading">
-    <img src="/static/img/loading1.gif">
-  </div>
-  <div class="container" v-else="show">
+    <img src="/static/img/Disk-1s-200px.svg" v-show="!show" id="loading">
+  <div class="container" v-if="show">
     <div class="item-wrap">
       <img :src="bookMsg.img">
       <div class="content-right">
@@ -14,9 +12,10 @@
       </div>
     </div>
     <div class="btn">
-      <button type="default" size="mini">加入收藏</button>
+      <button type="default" size="mini" @click="getCollection" v-if="isCollect == 0">加入收藏</button>
+      <button type="default" size="mini" v-else="isCollect == 1">已收藏</button>
       <button type="default" size="mini" open-type="share">分享好友</button>
-      <button type="default" size="mini">分享朋友圈</button>
+      <!--<button type="default" size="mini">分享朋友圈</button>-->
     </div>
     <div class="introduction">
       <div class="introductions">简介</div>
@@ -29,7 +28,7 @@
             <span>查看目录</span>
             <span>共{{langhth}}章</span>
           </div>
-          <div class="gengxin">更新于2天前</div>
+          <div class="gengxin">更新于两天前</div>
         </div>
       </div>
     </div>
@@ -40,20 +39,31 @@
 
 <script>
   import {axios} from '@/utils/index'
+  import timer from '@/components/timer'
   export default {
+    components:{
+      timer
+    },
     data(){
       return{
       bookId:'',
       bookMsg:{},
       langhth:0,
-        show:false
+      show:false,
+      isCollect:''
+      // date:''
       }
     },
     methods:{
+      computed:{
+      },
       getData(){
+        this.bookMsg = ''
+        this.langhth = 0
         axios.get(`/book/${this.bookId}`).then(res=>{
           this.bookMsg = res.data
           this.langhth = res.length
+          this.isCollect = res.isCollect
           this.show = true
         })
       },
@@ -62,11 +72,21 @@
         wx.navigateTo({
           url: `/pages/catalogue/main?id=${val}`
         })
+      },
+      getCollection(){
+        axios.post('/collection',{bookId:this.bookId}).then(res=>{
+          this.isCollect = 1
+        })
       }
     },
     onLoad(options){
+      this.show = false
       this.bookId = options.id;
       this.getData();
+    },
+    onShow(){
+       // this.date = wx.getStorageSync('date')
+
     },
     onShareAppMessage(){
       return{
@@ -79,17 +99,6 @@
 </script>
 
 <style scoped lang="less">
-  #loading{
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: white;
-    img{
-      transform: translate(10%,50%);
-    }
-  }
 .item-wrap{
   display: flex;
   img{
@@ -117,8 +126,7 @@
   }
 }
   .btn {
-    margin: 30rpx 0;
-    display: inline-block;
+    margin: 50rpx 0;
     display: flex;
     justify-content: space-around;
     border: none;

@@ -1,28 +1,28 @@
 <template>
   <div>
-    <div v-if="!shows" id="loading">
-      <img src="/static/img/loading1.gif">
-    </div>
-    <div class="container" v-else="shows">
+    <img src="/static/img/Disk-1s-200px.svg" v-show="!show" id="loading">
+    <div class="container" v-if="show">
       <div :style="{fontSize:fontSize + 'px'}">
-        <wemark :md="content" link highlight type="wemark"></wemark>
+        <wemark :md="content" link highlight type="rich-text"></wemark>
       </div>
-      <div class="catalogue" v-show="show" @click="handleShows"></div>
-      <scroll-view :scroll-y="true" class="wrap" :style="{transform:'translateX(' + num + ')',width:width + 'rpx'}">
-        <div v-for="(item,index) in catalogues"
-             @click="handleclick(item._id)"
-             :style="item._id == titleId?'background:#ccc':''"
-             :key="index"
-        class="title-item">
-          {{item.title}}
-        </div>
-      </scroll-view>
+      <div class="catalogue" v-show="shows" @click="handleShows"></div>
+        <scroll-view :scroll-y="true"
+                     :scroll-with-animation="true"
+                     class="wrap" :style="{transform:'translate3d(' + num + ',0,0)',width:width + 'rpx'}">
+          <div v-for="(item,index) in catalogues"
+               @click="handleclick(item._id)"
+               :style="item._id == titleId?'background:#ccc':''"
+               :key="index"
+               class="title-item">
+            {{item.title}}
+          </div>
+        </scroll-view>
       <div class="bottom">
-        <img src="/static/img/left.png" @click="handlejian">
-        <img src="/static/img/list.png" @click="handleShows">
-        <img src="/static/img/daa.png" @click="handleBig">
-        <img src="/static/img/da.png" @click="handleSmall">
-        <img src="/static/img/right.png" @click="handlePrev">
+        <span class="iconfont icon-back click" @click="handlejian"></span>
+        <span class="iconfont icon-mulu click" @click="handleShows"></span>
+        <span class="iconfont icon-yueduye_zitizengda click" @click="handleBig"></span>
+        <span class="iconfont icon-yueduye_zitijianxiao click" @click="handleSmall"></span>
+        <span class="iconfont icon-youjiantou click" @click="handlePrev"></span>
       </div>
     </div>
   </div>
@@ -35,73 +35,101 @@
      return{
        titleId:'',
        content:'',
+       shows:false,
        show:false,
        catalogues:[],
-       fontSize:50,
+       fontSize:16,
        index:0,
-       shows:false,
        title:'',
        num:'-600rpx',
        width:'0'
      }
    },
     methods:{
-     getData(){
-       axios.get(`/article/${this.titleId}`).then(res=>{
-        this.content = res.data.article.content
-         this.title = res.data.title
-         this.shows= true
-       })
+     async getData(){
+       this.content = ''
+       const contents = await axios.get(`/article/${this.titleId}`)
+         wx.hideLoading()
+         this.content = contents.data.article.content
+         this.title = contents.data.title
+         this.show = true
      },
       handleclick(val){
         this.handleShows()
         this.titleId = val;
         this.getData();
+        wx.showLoading({
+          title: '加载中',
+        })
       },
       handleShows(){
-        this.show = !this.show
-        if(this.show){
+        this.shows = !this.shows
+        if(this.shows){
            this.num = 0
           this.width = 600
         }else{
           this.num = '-600rpx'
         }
       },
-      handleShow(){
+      async handleShow(){
+       this.catalogues = []
        let bookId = this.$store.state.bookId
-        axios.get(`/titles/${bookId}`).then(res=>{
-          this.catalogues = res.data
-          this.shows= true
-          res.data.forEach(item=>{
+       const books =await axios.get(`/titles/${bookId}`)
+          this.catalogues = books.data
+          this.show= true
+          books.data.findIndex(item=>{
             if(item._id == this.titleId){
               this.index = item.index
             }
           })
-        })
       },
       handleBig(){
-       this.fontSize += 4
+        if(this.fontSize < 40){
+          this.fontSize += 2
+        }
+        else{
+          wx.showToast({title: '已经最大了'})
+        }
       },
       handleSmall(){
-        this.fontSize -= 4
+        if(this.fontSize > 10){
+          this.fontSize -= 2
+        }
+        else{
+          wx.showToast({title: '已经最小了'})
+        }
       },
       handlePrev(){
-      this.index += 1;
-        this.catalogues.forEach(item=>{
-          if(item.index == this.index){
-            this.titleId =  item._id
-            this.getData();
-          }
-        })
+        if(this.index == this.catalogues.length-1){
+          wx.showToast({title: '已经是最后一章了'})
+        }else{
+          wx.showLoading({
+            title: '加载中',
+          })
+          this.index += 1;
+          this.catalogues.forEach(item=>{
+            if(item.index == this.index){
+              this.titleId =  item._id
+              this.getData();
+            }
+          })
+        }
       },
       handlejian(){
-        this.index -= 1
-        this.catalogues.forEach(item=>{
-          if(item.index == this.index){
-            this.titleId =  item._id
-            this.getData();
-          }
-        })
+        if(this.index == 0){
+          wx.showToast({title: '已经是第一章了'})
+        }else{
+          wx.showLoading({
+            title: '加载中',
+          })
+          this.index -= 1
+          this.catalogues.forEach(item=>{
+            if(item.index == this.index){
+              this.titleId =  item._id
+              this.getData();
+            }
+          })
+        }
       },
     },
     watch:{
@@ -113,44 +141,42 @@
      }
     },
     onShow(){
+     this.fontSize = 16
       this.num = '-600rpx'
       this.width = 0
-      this.show = false
+      this.shows = false
     },
     onLoad(options){
+      this.show = false
       this.titleId =options.id
       this.getData();
       this. handleShow();
     },
-
-  };
-</script>
-
-<style scoped lang="less">
-  #loading{
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: white;
-    img{
-      transform: translate(10%,50%);
-    }
   }
+</script>
+<style src="@/css/iconfont.css"> </style>
+<style scoped lang="less">
   .bottom{
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: #fff;
-    padding: 10px 0 16px;
-    img{
-      height: 30px;
-      width: 20px;
+    background: #fff;
+    border-top: 1rpx solid #eee;
+    border-radius: 0 2px 2px 0 rgba(0,0,0,.2);
+    .iconfont {
+      font-size: 22px;
+      width: 100rpx;
+      height: 100rpx;
+      line-height: 100rpx;
+      text-align: center;
     }
+  }
+  .click:active {
+    background: #f1f1f1;
+    color: #fff;
   }
   .catalogue{
     position: fixed;
@@ -180,11 +206,7 @@
       line-height: 60rpx;
       height: 60rpx;
       border-bottom: 1px solid #f1f1f1;
+      overflow-scrolling: touch;
     }
   }
-
-
-  /*.ziti{*/
-    /*font-size: {{fontSize}};*/
-  /*}*/
 </style>
