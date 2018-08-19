@@ -2,9 +2,8 @@
     <div class="content">
       <img src="/static/img/yun.jpg">
       <div class="yundang">云书 2.0</div>
-      <button open-type="getUserInfo"
-              @getuserinfo="getUserInfo"
-              @click ='login'>立即登录</button>
+      <button open-type="getUserInfo" @getuserinfo="bindGetUserInfo" v-show="!value">获取授权</button>
+      <button @click="login" v-show="value">立即登录</button>
       <!--<button v-show = 'show' open-type="getPhoneNumber">立即绑定手机</button>-->
       <!--<div v-show = 'show'>为了你的账户安全，请先绑定手机</div>-->
       <div class="bottom">小程序有云书提供技术支持</div>
@@ -16,30 +15,32 @@
   export default {
    data(){
      return{
-      // show:false
+       value:''
      }
    },
     methods:{
       login(){
-        let self = this
         wx.login({
           success: function(res) {
             let code = res.code
              axios.post('/login',{code,appid:'wxfab09830e3ecdc04',secret:'05899fa590f991598cdd6026eb4fcbf1'}).then(res=>{
-                if(res.code == 200){
-                  wx.navigateBack({
-                    delta: 1
-                  })
+               let value = wx.getStorageSync('key')
+                if(res.code == 200 && value){
+                   wx.navigateBack({
+                     delta: 1
+                 })
                 }
              })
           }
         })
       },
-      getUserInfo(e){
-          wx.setStorageSync('key', e.mp.detail.userInfo)
+      bindGetUserInfo(e){
+        console.log(e);
+        wx.setStorageSync('key', e.mp.detail.userInfo)
+        this.value = e.mp.detail.userInfo
       }
     }
- }
+  }
 </script>
 
 <style scoped lang="less">

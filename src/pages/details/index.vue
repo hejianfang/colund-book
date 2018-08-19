@@ -88,13 +88,14 @@
        // this.date = wx.getStorageSync('date')
 
     },
-    onShareAppMessage(){
-      return{
+    onShareAppMessage (options) {
+      console.log(options)
+      return {
         title: this.bookMsg.title,
-        imageUrl: this.bookMsg.img,
-        path:'/pages/index/main'
+        path: `/pages/details/main?id=${this.bookId}`,
+        imageUrl: this.bookMsg.img
       }
-    }
+    },
   };
 </script>
 

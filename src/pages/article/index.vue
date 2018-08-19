@@ -146,6 +146,13 @@
       this.width = 0
       this.shows = false
     },
+    onShareAppMessage (obj) {
+      return {
+        title: this.catalogues.title,
+        path: '/pages/article/main?id=' + this.titleId,
+        imageUrl: this.catalogues.img
+      }
+    },
     onLoad(options){
       this.show = false
       this.titleId =options.id
