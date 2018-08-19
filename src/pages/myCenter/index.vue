@@ -41,12 +41,18 @@
     },
     methods:{
       handleLogin(){
+      if(this.length !== 0){
         wx.navigateTo({
           url: '/pages/login/main'
         })
+      }else{
+        wx.showToast({
+          title: '你没有收藏书籍',
+        })
+      }
       },
       getCollection(){
-        axios.get('/collection?pn=1&size=10').then(res=>{
+        axios.get('/collection').then(res=>{
           if(res.data){
            this.length = res.data.length
          }

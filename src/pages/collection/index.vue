@@ -36,7 +36,7 @@
             this.isLoading = false
             this.done = true
             this.doneAll = false
-          }else if(res.data.length <= 6){
+          }else if(res.data.length < 8){
             this.done = true
             this.show = true
             this.books = this.books.concat(res.data)
