@@ -41,15 +41,9 @@
     },
     methods:{
       handleLogin(){
-      if(this.length !== 0){
         wx.navigateTo({
           url: '/pages/login/main'
         })
-      }else{
-        wx.showToast({
-          title: '你没有收藏书籍',
-        })
-      }
       },
       getCollection(){
         axios.get('/collection').then(res=>{
@@ -62,9 +56,17 @@
         })
       },
       handleCollection(){
-        wx.navigateTo({
-          url: '/pages/collection/main'
-        })
+       if(this.length !==0){
+         wx.navigateTo({
+           url: '/pages/collection/main'
+         })
+       }else{
+         wx.showToast({
+           title: '你没有收藏书籍',
+           icon: 'none',
+           duration: 2000
+         })
+       }
       }
     },
     onReady(){

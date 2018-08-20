@@ -2,7 +2,11 @@
     <div>
       <img src="/static/img/Disk-1s-200px.svg" v-show="!show" id="loading">
      <div v-if="show" class="collection">
-       <div v-for="(item,index) in books" :key="index" class="collections" @click="handleBooks(item.book._id)">
+       <div v-for="(item,index) in books" :key="index"
+            class="collections"
+            @touchstart="mytouchstart"
+            @touchend="mytouchend"
+            @tap="toDetail(item.book._id)">
          <img :src="item.book.img">
          <div>{{item.book.title}}</div>
        </div>
@@ -25,7 +29,9 @@
        jiazai:true,
        show:false,
        done:false,
-       doneAll:true
+       doneAll:true,
+       touch_start:0,
+       touch_end:0
      }
    },
     methods:{
@@ -39,6 +45,7 @@
           }else if(res.data.length < 8){
             this.done = true
             this.show = true
+            this.doneAll = false
             this.books = this.books.concat(res.data)
           }
           else{
@@ -48,10 +55,21 @@
           }
         })
       },
-      handleBooks(val){
-        wx.navigateTo({
-          url: `/pages/details/main?id=${val}`
-        })
+      mytouchstart (e) {
+          this.touch_start= e.timeStamp
+      },
+      mytouchend (e) {
+         this.touch_end = e.timeStamp
+      },
+      toDetail(options){
+        let touchTime = this.touch_end - this.touch_start;
+        if(touchTime<350){
+          wx.navigateTo({
+            url: `/pages/details/main?id=${options}`
+          })
+        }else{
+           console.log('长按')
+        }
       }
     },
     onReachBottom(){

@@ -20,7 +20,10 @@
        </swiper>
      </div>
      <div class="item-content" v-for="(item,value) in lists" :key="value">
-       <div class="content-top"><span>|</span><span>{{item.title}}</span></div>
+       <div class="content-top">
+         <div class="content-wraps"><span>|</span><span>{{item.title}}</span></div>
+         <div class="content-more" @click="handleMore(item)"><span>更多...</i></span></div>
+       </div>
        <div class="items-wrap" v-for="(ite,index) in item.books" :key="index" @click="handleClickid(ite._id)">
          <img :src="ite.img">
          <div class="items-details">
@@ -50,9 +53,6 @@
       }
     },
     methods: {
-      computed:{
-
-      },
       getSwiper () {
         axios.get('/swiper').then(res => {
           this.swiperArr = res.data
@@ -68,6 +68,11 @@
       handleClickid(val){
         wx.navigateTo({
           url: `/pages/details/main?id=${val}`
+        })
+      },
+      handleMore(val){
+        wx.navigateTo({
+          url: `/pages/more/main?id=${val._id}`
         })
       }
     },
@@ -93,7 +98,7 @@
     }
     },
     onReachBottom(){
-      console.log(1123);
+
     }
   }
 </script>
@@ -126,8 +131,15 @@
   .item-content{
     .content-top{
       margin: 20rpx 0;
+      display: flex;
+      justify-content: space-between;
     }
-    .content-top span:last-child{
+    .content-more{
+      font-size: 30rpx;
+      color: #666;
+      vertical-align: middle;
+    }
+    .content-top .content-wraps span:last-child{
       font-size: 36rpx;
       font-weight: 600;
       margin-left: 10rpx;
