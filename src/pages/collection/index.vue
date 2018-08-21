@@ -83,7 +83,7 @@
                 }
               })
             } else if (res.cancel) {
-              console.log('用户点击取消')
+              that.showIcon = false
             }
           }
         })
@@ -121,7 +121,7 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  padding:  0 14rpx;
+  padding:0 14rpx;
   .collections{
     font-size: 24rpx;
     width: 348rpx;
