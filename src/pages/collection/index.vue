@@ -2,13 +2,16 @@
     <div>
       <img src="/static/img/Disk-1s-200px.svg" v-show="!show" id="loading">
      <div v-if="show" class="collection">
-       <div v-for="(item,index) in books" :key="index"
-            class="collections"
-            @touchstart="mytouchstart"
-            @touchend="mytouchend"
-            @tap="toDetail(item.book._id)">
-         <img :src="item.book.img">
-         <div>{{item.book.title}}</div>
+       <div  v-for="(item,index) in books" :key="index" class="collections">
+         <div @touchstart="mytouchstart"
+              @touchend="mytouchend"
+              @tap="toDetail(item.book._id)">
+           <div  class="img-wrap">
+             <img :src="item.book.img">
+           </div>
+           <div>{{item.book.title}}</div>
+         </div>
+         <icon type="cancel" size="26" color="red" v-show="showIcon" @click="deleteBooks(item.book._id)"/>
        </div>
      </div>
       <div class="jiazai" v-if="show">
@@ -31,7 +34,10 @@
        done:false,
        doneAll:true,
        touch_start:0,
-       touch_end:0
+       touch_end:0,
+       id:'',
+       showIcon:false,
+       num:0
      }
    },
     methods:{
@@ -61,6 +67,27 @@
       mytouchend (e) {
          this.touch_end = e.timeStamp
       },
+      deleteBooks(val){
+        let that = this
+        wx.showModal({
+          title: '提示',
+          content: '是否删除书籍',
+          success: function(res) {
+            if (res.confirm) {
+              axios.delete(`/collection/${val}`).then(res=>{
+                if(res.code == 200){
+                axios.get('/collection?pn=1&size=8').then(res=>{
+                  that.books = res.data
+                  that.showIcon = false
+                })
+                }
+              })
+            } else if (res.cancel) {
+              console.log('用户点击取消')
+            }
+          }
+        })
+      },
       toDetail(options){
         let touchTime = this.touch_end - this.touch_start;
         if(touchTime<350){
@@ -68,7 +95,8 @@
             url: `/pages/details/main?id=${options}`
           })
         }else{
-           console.log('长按')
+          this.showIcon = true
+          this.num = 0.7
         }
       }
     },
@@ -79,7 +107,7 @@
       this.getCollection();
     }
     },
-   onLoad(){
+    onLoad(){
      this.getCollection();
    },
     onUnload(){
@@ -92,17 +120,26 @@
 .collection{
   display: flex;
   flex-wrap: wrap;
+  justify-content: space-between;
   padding:  0 14rpx;
   .collections{
     font-size: 24rpx;
     width: 348rpx;
     color: #555;
     text-align: center;
-    margin: 14rpx 0 18rpx 12rpx;
-    img{
-      height: 260rpx;
-      width: 220rpx;
-      box-shadow:0 0 4px 3px rgba(0,0,0,.6) ;
+    margin: 54rpx 0 18rpx 12rpx;
+    position: relative;
+    icon{
+      position: absolute;
+      top: -40rpx;
+      left: 0;
+    }
+    .img-wrap{
+      img{
+        height: 260rpx;
+        width: 220rpx;
+        box-shadow:0 0 4px 3px rgba(0,0,0,.6) ;
+      }
     }
   }
 }

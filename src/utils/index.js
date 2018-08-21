@@ -30,7 +30,7 @@ export const axios = {
       })
     })
   },
-  post (url, data) {
+  post (url, data, method = 'POST') {
     return new Promise((resolve, reject) => {
       let token = wx.getStorageSync('token')
       let header = {
@@ -41,7 +41,7 @@ export const axios = {
       }
       wx.request({
         url: baseUrl + url,
-        method: 'POST',
+        method,
         data,
         header,
         success (res) {
@@ -55,5 +55,8 @@ export const axios = {
         }
       })
     })
+  },
+  delete (url, data) {
+    return this.post(url, data,'DELETE')
   }
 }

@@ -75,7 +75,23 @@
       },
       getCollection(){
         axios.post('/collection',{bookId:this.bookId}).then(res=>{
-          this.isCollect = 1
+          if(res.code == 200){
+            this.isCollect = 1
+          }else{
+            wx.showModal({
+              title: '提示',
+              content: res.msg,
+              success: function(res) {
+                if (res.confirm) {
+                  wx.navigateTo({
+                    url: '/pages/login/main'
+                  })
+                } else if (res.cancel) {
+                  console.log('用户点击取消')
+                }
+              }
+            })
+          }
         })
       }
     },
