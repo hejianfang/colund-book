@@ -1,6 +1,7 @@
 <template>
     <div>
-      <div class="item-content">
+      <img src="/static/img/Disk-1s-200px.svg" v-show="!show" id="loading">
+      <div class="item-content container" v-if="show">
         <div class="content-top">
           <div class="content-wraps"><span>|</span><span>{{title}}</span></div>
         </div>
@@ -11,31 +12,50 @@
               <p>{{ite.title}}</p>
               <p>{{ite.desc}}</p>
             </div>
-            <p><span>{{ite.author}}</span> <span>两天前 <span>{{title}}{{ite.looknums}}人在看</span></span> </p>
+            <div class="qwerhj">
+              <div>{{ite.author}}</div>
+              <div class="ertyuiopp"><timer :time="ite.updateTime"></timer><div>{{item.title}}{{ite.looknums}}人在看</div></div>
+            </div>
           </div>
         </div>
+      </div>
+      <div class="jiazai" v-if="show">
+        <div v-show="done">已全部加载</div>
       </div>
     </div>
 </template>
 
 <script>
+  import timer from '@/components/timer'
   import {axios} from '@/utils/index'
   export default {
+    components:{
+      timer
+    },
    data(){
      return{
        lists:[],
        typeId:'',
-        title:''
+        title:'',
+       done:false,
+       onbottom:true,
+       pn:1,
+       show:false
      }
    },
     methods:{
       getLists(){
         let typeId = this.typeId
-        axios.get(`/category/${typeId}/books`).then(res=>{
-          this.lists = res.data.books
-          this.title = res.data.title
-          console.log(this.lists);
-          // this.show = true
+        let pn = this.pn
+        axios.get(`/category/${typeId}/books?pn=${pn}&size=5`).then(res=>{
+          if(res.data.books.length == 0){
+            this.done = true
+            this.onbottom = false
+          }else{
+            this.lists = this.lists.concat(res.data.books)
+            this.title = res.data.title
+            this.show = true
+          }
         })
       },
       handleClickid(val){
@@ -46,7 +66,16 @@
     },
     onLoad(options){
       this.typeId = options.id
-      this. getLists();
+      this.getLists();
+    },
+    onReachBottom(){
+      if(this.onbottom){
+        this.pn += 1
+        this.getLists()
+      }
+    },
+    onUnload(){
+     this.lists = []
     },
     watch:{
       title(){
@@ -101,12 +130,21 @@
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
   }
-  .items-details p{
-    font-size: 26rpx;
-    color: #555;
-    display: flex;
-    justify-content: space-between;
+    .items-details .qwerhj{
+      font-size: 26rpx;
+      color: #555;
+      display: flex;
+      justify-content: space-between;
+      .ertyuiopp{
+        display: flex;
+      }
+    }
   }
   }
+  .jiazai{
+    text-align: center;
+    font-size: 30rpx;
+    color:#888;
+    margin: 20rpx 0;
   }
 </style>

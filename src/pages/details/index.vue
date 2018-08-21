@@ -28,7 +28,7 @@
             <span>查看目录</span>
             <span>共{{langhth}}章</span>
           </div>
-          <div class="gengxin">更新于两天前</div>
+          <div class="gengxin"><timer :time="bookMsg.updateTime"></timer></div>
         </div>
       </div>
     </div>

@@ -22,7 +22,7 @@
      <div class="item-content" v-for="(item,value) in lists" :key="value">
        <div class="content-top">
          <div class="content-wraps"><span>|</span><span>{{item.title}}</span></div>
-         <div class="content-more" @click="handleMore(item)"><span>更多...</i></span></div>
+         <div class="content-more" @click="handleMore(item)"><span>更多...</span></div>
        </div>
        <div class="items-wrap" v-for="(ite,index) in item.books" :key="index" @click="handleClickid(ite._id)">
          <img :src="ite.img">
@@ -31,17 +31,27 @@
              <p>{{ite.title}}</p>
              <p>{{ite.desc}}</p>
            </div>
-           <p><span>{{ite.author}}</span> <span>两天前 <span>{{item.title}}{{ite.looknums}}人在看</span></span> </p>
+           <div class="qwerhj">
+             <div>{{ite.author}}</div>
+             <div class="ertyuiopp"><timer :time="ite.updateTime"></timer><div>{{item.title}}{{ite.looknums}}人在看</div></div>
+           </div>
          </div>
        </div>
      </div>
+   </div>
+   <div class="jiazai" v-if="show">
+     <div v-show="doneAll">已全部加载</div>
    </div>
  </div>
 </template>
 
 <script>
   import {axios} from '@/utils/index'
+  import timer from '@/components/timer'
   export default {
+    components:{
+      timer
+    },
     data () {
       return {
         autoplay: true,
@@ -49,7 +59,10 @@
         duration: 500,
         swiperArr: [],
         lists:[],
-        show :false
+        show :false,
+        doneAll:false,
+        pn:1,
+        onbottom:true
       }
     },
     methods: {
@@ -57,12 +70,20 @@
         axios.get('/swiper').then(res => {
           this.swiperArr = res.data
           this.show = true
+          wx.hideLoading()
         })
       },
       getLists(){
-        axios.get('/category/books').then(res=>{
-          this.lists = res.data
-          this.show = true
+        let pn = this.pn
+        axios.get(`/category/books?pn=${pn}&size=1`).then(res=>{
+          if(res.data.length == 0){
+            this.doneAll = true
+            this.onbottom = false
+          }else{
+            this.lists =this.lists.concat(res.data)
+            this.show = true
+            wx.hideLoading()
+          }
         })
       },
       handleClickid(val){
@@ -71,6 +92,7 @@
         })
       },
       handleMore(val){
+        console.log(val._id);
         wx.navigateTo({
           url: `/pages/more/main?id=${val._id}`
         })
@@ -81,25 +103,28 @@
        this.getLists()
     },
   onPullDownRefresh(){
-      wx.setBackgroundTextStyle({
-        textStyle: 'dark', // 下拉背景字体、loading 图的样式为dark
-      })
-      let that = this
-    if(that.lists){
-      that.getSwiper()
-      that.getLists()
-      wx.stopPullDownRefresh()
-    }else{
-      wx.showToast({
-        title: '失败',
-        icon:'cancel',
-        duration: 2000
-      })
-    }
+    let that = this
+    wx.setBackgroundTextStyle({
+      textStyle: 'dark', // 下拉背景字体、loading 图的样式为dark
+    })
+    that.pn = 1
+    that.doneAll = false
+    that.onbottom = true
+    that.lists = []
+    that.swiperArr=[]
+    wx.showLoading({
+      title: '刷新中',
+    })
+    that.getLists();
+    that.getSwiper()
+    wx.stopPullDownRefresh()
     },
     onReachBottom(){
-
-    }
+      if(this.onbottom){
+        this.pn += 1
+        this.getLists()
+      }
+    },
   }
 </script>
 
@@ -174,12 +199,21 @@
          -webkit-line-clamp: 3;
          -webkit-box-orient: vertical;
         }
-      .items-details p{
+      .items-details .qwerhj{
         font-size: 26rpx;
         color: #555;
         display: flex;
         justify-content: space-between;
+        .ertyuiopp{
+          display: flex;
+        }
       }
     }
+  }
+  .jiazai{
+    text-align: center;
+    font-size: 30rpx;
+    color:#888;
+    margin: 20rpx 0;
   }
 </style>
