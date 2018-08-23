@@ -108,6 +108,8 @@
     }
     },
     onLoad(){
+     this.pn = 1
+     this.isLoading = true
      this.getCollection();
    },
     onUnload(){

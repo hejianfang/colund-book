@@ -9,6 +9,7 @@ export default {
     backgroundTextStyle: 'light',
     navigationBarBackgroundColor: '#fff',
     navigationBarTitleText: '',
-    navigationBarTextStyle: 'black'
+    navigationBarTextStyle: 'black',
+    onReachBottomDistance:0
   }
 }

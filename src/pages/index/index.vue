@@ -75,7 +75,7 @@
       },
       getLists(){
         let pn = this.pn
-        axios.get(`/category/books?pn=${pn}&size=1`).then(res=>{
+        axios.get(`/category/books?pn=${pn}&size=2&booksSize=2`).then(res=>{
           if(res.data.length == 0){
             this.doneAll = true
             this.onbottom = false

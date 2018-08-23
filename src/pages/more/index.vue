@@ -1,7 +1,7 @@
 <template>
     <div>
-      <img src="/static/img/Disk-1s-200px.svg" v-show="!show" id="loading">
-      <div class="item-content container" v-if="show">
+      <img src="/static/img/Disk-1s-200px.svg" v-show="show" id="loading">
+      <div class="item-content container" v-if="!show">
         <div class="content-top">
           <div class="content-wraps"><span>|</span><span>{{title}}</span></div>
         </div>
@@ -14,12 +14,12 @@
             </div>
             <div class="qwerhj">
               <div>{{ite.author}}</div>
-              <div class="ertyuiopp"><timer :time="ite.updateTime"></timer><div>{{item.title}}{{ite.looknums}}人在看</div></div>
+              <div class="ertyuiopp"><timer :time="ite.updateTime"></timer><div>{{ite.title}}{{ite.looknums}}人在看</div></div>
             </div>
           </div>
         </div>
       </div>
-      <div class="jiazai" v-if="show">
+      <div class="jiazai" v-if="!show">
         <div v-show="done">已全部加载</div>
       </div>
     </div>
@@ -36,25 +36,32 @@
      return{
        lists:[],
        typeId:'',
-        title:'',
+       title:'',
        done:false,
        onbottom:true,
        pn:1,
-       show:false
+       show:true
      }
    },
     methods:{
       getLists(){
         let typeId = this.typeId
         let pn = this.pn
+        console.log(pn);
         axios.get(`/category/${typeId}/books?pn=${pn}&size=5`).then(res=>{
           if(res.data.books.length == 0){
             this.done = true
             this.onbottom = false
-          }else{
+          }else if(res.data.books.length <= 5){
+            this.done = true
             this.lists = this.lists.concat(res.data.books)
             this.title = res.data.title
-            this.show = true
+            this.show = false
+          }
+          else{
+            this.lists = this.lists.concat(res.data.books)
+            this.title = res.data.title
+            this.show = false
           }
         })
       },
@@ -65,6 +72,8 @@
       },
     },
     onLoad(options){
+      this.pn = 1
+      this.onbottom = true
       this.typeId = options.id
       this.getLists();
     },
@@ -75,7 +84,7 @@
       }
     },
     onUnload(){
-     this.lists = []
+      this.lists = []
     },
     watch:{
       title(){
