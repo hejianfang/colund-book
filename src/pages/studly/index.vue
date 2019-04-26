@@ -15,8 +15,8 @@
                              :stroke-width="4"
               />
               </div>
+              <span>我是主干</span>
               <span>已看{{item.percent}}%</span>
-               <span>000</span>
             </div>
             <div class="getLooks" id="ziti">
               <div >上次查看:{{item.title.title}}</div>
