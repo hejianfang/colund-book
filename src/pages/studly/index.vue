@@ -15,6 +15,7 @@
                              :stroke-width="4"
               />
               </div>
+              <span>自己的分支</span>
               <span>我是主干</span>
               <span>我是分支</span>
 
