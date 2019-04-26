@@ -17,6 +17,7 @@
               </div>
               <span>我是主干</span>
               <span>我是分支</span>
+              <span>我自己</span>
               <span>已看{{item.percent}}%</span>
             </div>
             <div class="getLooks" id="ziti">
